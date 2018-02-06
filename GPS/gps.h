@@ -140,34 +140,49 @@ typedef __packed struct
     u16 end;            		//结束符
 } SkyTra_NACK;
 
+//本地调用链接库，GPS所有可读数据
+typedef __packed struct
+{
+	float 			Longitude;
+	u8 				EWsymbol;
+	float 			Latitude;
+	u8				NSsymbol;
+	Bool_ClassType 	CapSignal;
+	float			Altitude;
+	float			Speed;
+	u8				FixMode;
+	u8 				PosslNum;
+	u8 				SvNum;
+	u8				BeidouSvNum;
+	nmea_utc_time 	GPS_UTC;
+} Local_GPSTotalData;
+extern Local_GPSTotalData lgps;
+
 //返回u32的pow函数
 #ifndef uint32_pow
 #define uint32_pow				(uint32_t)pow
 #endif
 
-#define gpsDataSize				17u		
-extern float gpsWholeData[gpsDataSize];
-
-int NMEA_Str2num (u8 *buf, u8*dx);
-void GPS_Analysis (nmea_msg *gpsx, u8 *buf);
-void NMEA_GPGSV_Analysis (nmea_msg *gpsx, u8 *buf);
-void NMEA_BDGSV_Analysis (nmea_msg *gpsx, u8 *buf);
-void NMEA_GNGGA_Analysis (nmea_msg *gpsx, u8 *buf);
-void NMEA_GNGSA_Analysis (nmea_msg *gpsx, u8 *buf);
-void NMEA_GNGSA_Analysis (nmea_msg *gpsx, u8 *buf);
-void NMEA_GNRMC_Analysis (nmea_msg *gpsx, u8 *buf);
-void NMEA_GNVTG_Analysis (nmea_msg *gpsx, u8 *buf);
-u8 SkyTra_Cfg_Cfg_Save (void);
-u8 SkyTra_Cfg_Msg (u8 msgid, u8 uart1set);
-u8 SkyTra_Cfg_Prt (u32 baud_id);
-u8 SkyTra_Cfg_Tp (u32 width);
-u8 SkyTra_Cfg_Rate (u8 Frep);
-void SkyTra_Send_Date (u8* dbuf, u16 len);
-u8* data_Little_endian (u8* data, u16 len);
+static u8 NMEA_Comma_Pos (u8 *buf, u8 cx);
+static int NMEA_Str2num (u8 *buf, u8*dx);
+static void GPS_Analysis (nmea_msg *gpsx, u8 *buf);
+static void NMEA_GPGSV_Analysis (nmea_msg *gpsx, u8 *buf);
+static void NMEA_BDGSV_Analysis (nmea_msg *gpsx, u8 *buf);
+static void NMEA_GNGGA_Analysis (nmea_msg *gpsx, u8 *buf);
+static void NMEA_GNGSA_Analysis (nmea_msg *gpsx, u8 *buf);
+static void NMEA_GNGSA_Analysis (nmea_msg *gpsx, u8 *buf);
+static void NMEA_GNRMC_Analysis (nmea_msg *gpsx, u8 *buf);
+static void NMEA_GNVTG_Analysis (nmea_msg *gpsx, u8 *buf);
+static u8 SkyTra_Cfg_Cfg_Save (void);
+static u8 SkyTra_Cfg_Msg (u8 msgid, u8 uart1set);
+static u8 SkyTra_Cfg_Prt (u32 baud_id);
+static u8 SkyTra_Cfg_Tp (u32 width);
+static u8 SkyTra_Cfg_Rate (u8 Frep);
+static void SkyTra_Send_Date (u8* dbuf, u16 len);
 //GPS应用
-void GPS_TotalConfigInit (void);	//GPS初始化
-void GPS_TotalData_Storage (void);	//存储GPS数据
-void GPS_TotalData_Display (void);	//GPS数据显示
+void GPS_TotalConfigInit (void);			//GPS初始化
+static void GPS_TotalData_Storage (void);	//存储GPS数据
+static void GPS_TotalData_Display (void);	//GPS数据显示
 void GPS_DataGatherTaskHandler (void);	
 
 

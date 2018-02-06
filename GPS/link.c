@@ -8,6 +8,7 @@
 */
 
 Stew_EXTI_Setting			StewEXTI_Switch;
+GPS_InfoPrint				GPSP_Switch;
 
 //链接到Universal_Resource_Config函数的模块库
 void ModuleGPS_UniResConfig (void)
@@ -17,12 +18,15 @@ void ModuleGPS_UniResConfig (void)
 		但也有可能普通监测不够快
 	*/
 	StewEXTI_Switch 	= StewEXTI_Enable;				//StewEXTI_Enable	StewEXTI_Disable
+	GPSP_Switch         = GPSP_Enable;					//GPSP_Enable       GPSP_Disable
 }
 
 //模块选项映射表，链接到urcMapTable_Print函数
 void ModuleGPS_URCMap (void)
 {
 	printf("\r\n%02d 	Stew EXTI Setting", urc_stew);
+	usart1WaitForDataTransfer();
+	printf("\r\n%02d 	GPS Info Print", urc_gpsp);
 	usart1WaitForDataTransfer();
 }
 
@@ -32,6 +36,7 @@ void ModuleGPS_urcDebugHandler (u8 ed_status, GPS_SwitchNbr sw_type)
 	switch (sw_type)
 	{
 	case urc_stew: 		StewEXTI_Switch	= (Stew_EXTI_Setting)ed_status;		break;	
+	case urc_gpsp:		GPSP_Switch     = (GPS_InfoPrint)ed_status;			break;
 	}
 }
 
@@ -60,16 +65,26 @@ void U1RSD_example (void)
 //OLED常量第四屏，链接到OLED_DisplayInitConst和UIScreen_DisplayHandler函数
 void OLED_ScreenP4_Const (void)
 {	
-	OLED_ShowString(strPos(1u), ROW1, (const u8*)"GlobalPosition", Font_Size);	
-	OLED_ShowString(strPos(1u), ROW2, (const u8*)"    System    ", Font_Size);	
+	OLED_ShowString(strPos(0u), ROW1, (const u8*)"Global Position", Font_Size);	
+	OLED_ShowString(strPos(0u), ROW2, (const u8*)"SatelliteSystem", Font_Size);	
 	OLED_Refresh_Gram();
 }
 
-//OLED GlobalPositioningSystem数据显示
+//OLED GlobalPositioningSystem数据显示，链接到UIScreen_DisplayHandler函数显示
 void OLED_DisplayGPS (void)
 {	
-	//显示经纬度，高度，获取数据状态
-	
+	//经度
+	OLED_ShowString(strPos(0u), ROW1, (const u8*)"Longi:", Font_Size);							//Longitude经度
+	OLED_ShowNum(strPos(6u), ROW1, lgps.Longitude, 3u, Font_Size);								//整数位3位
+	OLED_ShowString(strPos(9u), ROW1, (const u8*)".", Font_Size);	
+	OLED_ShowNum(strPos(10u), ROW1, ((u32)(lgps.Longitude * 10000) % 10000), 4u, Font_Size);	//小数位4位
+	OLED_ShowString(strPos(14u), ROW1, (const u8*)(&lgps.EWsymbol), Font_Size);					//东西经标识
+	//纬度
+	OLED_ShowString(strPos(0u), ROW2, (const u8*)"Latit:", Font_Size);							//Latitude纬度
+	OLED_ShowNum(strPos(6u), ROW2, lgps.Latitude, 3u, Font_Size);								//整数位3位
+	OLED_ShowString(strPos(9u), ROW2, (const u8*)".", Font_Size);	
+	OLED_ShowNum(strPos(10u), ROW2, ((u32)(lgps.Latitude * 10000) % 10000), 4u, Font_Size);		//小数位4位
+	OLED_ShowString(strPos(14u), ROW2, (const u8*)(&lgps.NSsymbol), Font_Size);					//南北纬标识
 	OLED_Refresh_Gram();
 }
 

@@ -31,15 +31,19 @@
 //是否开启急停外部中断
 typedef enum {StewEXTI_Enable = 1, StewEXTI_Disable = !StewEXTI_Enable}	Stew_EXTI_Setting;
 extern Stew_EXTI_Setting			StewEXTI_Switch;
+//是否开启GPS信息打印
+typedef enum {GPSP_Enable = 1, GPSP_Disable = !GPSP_Enable} GPS_InfoPrint;
+extern GPS_InfoPrint				GPSP_Switch;
 
 //urc开源链接编号
 typedef enum 
 {
 	urc_stew 	= 15,
+	urc_gpsp	= 16,
 } GPS_SwitchNbr;
 
 //裁去protocol.h中的定义放到这里来重新定义urc协议长度
-#define Max_Option_Value		15u
+#define Max_Option_Value		16u
 
 //裁去ui.h中定义的总切屏数到这里来重新定义
 #define ScreenPageCount			5u						
