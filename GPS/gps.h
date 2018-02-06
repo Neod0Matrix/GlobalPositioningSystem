@@ -157,6 +157,7 @@ typedef __packed struct
 	nmea_utc_time 	GPS_UTC;
 } Local_GPSTotalData;
 extern Local_GPSTotalData lgps;
+extern nmea_msg ggps;
 
 //返回u32的pow函数
 #ifndef uint32_pow
@@ -181,8 +182,8 @@ static u8 SkyTra_Cfg_Rate (u8 Frep);
 static void SkyTra_Send_Date (u8* dbuf, u16 len);
 //GPS应用
 void GPS_TotalConfigInit (void);			//GPS初始化
-static void GPS_TotalData_Storage (void);	//存储GPS数据
-static void GPS_TotalData_Display (void);	//GPS数据显示
+static void GPS_TotalData_Storage (nmea_msg *gpsx, Local_GPSTotalData *l);	//存储GPS数据
+static void GPS_TotalData_Display (Local_GPSTotalData *l);	//GPS数据显示
 void GPS_DataGatherTaskHandler (void);	
 
 

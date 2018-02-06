@@ -16,7 +16,7 @@
 #define _Project_Type_			"GPS"					//工程类型
 #define _Frame_Name_			"EmbeddedBreakerCore"	//架构名称
 #define _Project_Name_			"GlobalPositioningSystem"//工程名称
-#define _Code_Version_ 			"OS_v0p0_LTE"			//长期演进版
+#define _Code_Version_ 			"OS_v0p1_LTE"			//长期演进版
 #define _Laboratory_			"T.WKVER"				//实验室
 #define _Logo_					"Absolute Liberal"		//logo
 #define _Developer_				"Neod Anderjon"			//开发者
