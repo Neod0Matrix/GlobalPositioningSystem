@@ -426,12 +426,8 @@ static void SkyTra_Send_Date (u8* dbuf, u16 len)	//USART2字符发送
     }
 }
 
-/*
-	提取NMEA-0183信息
-	gpsx:nmea信息结构体
-	buf:接收到的GPS数据缓冲区首地址
-*/
-static void GPS_Analysis (nmea_msg *gpsx, u8 *buf)
+//依据Skytra协议提取NMEA-0183信息
+static void GPS_SkytraProtocolAnalysis (nmea_msg *gpsx, u8 *buf)
 {
     NMEA_GPGSV_Analysis(gpsx, buf);			//GPGSV解析
     NMEA_BDGSV_Analysis(gpsx, buf);			//BDGSV解析
@@ -441,7 +437,7 @@ static void GPS_Analysis (nmea_msg *gpsx, u8 *buf)
     NMEA_GNVTG_Analysis(gpsx, buf);			//GPNTG解析
 }
 
-//GPS初始化
+//GPS整体配置初始化
 void GPS_TotalConfigInit (void)
 {
     u8 key = 0xFF;
@@ -481,7 +477,7 @@ static void GPS_TotalData_Storage (nmea_msg *gps, Local_GPSTotalData *l)
 		Beep_Once; 
 		Beep_Once;
 	}
-	//丢失信号
+	//丢失信号标志
 	else if (l -> Longitude == 0 && l -> Latitude == 0 && capSignal)
 	{
 		capSignal = False;							//置位
@@ -514,98 +510,85 @@ static void GPS_TotalData_Storage (nmea_msg *gps, Local_GPSTotalData *l)
 //打印GPS定位信息
 static void GPS_TotalData_Display (Local_GPSTotalData *l)
 {	
-	u8 i;
 	//定位修正模式字符串
-	const u8 *fixModeList[4] = {(u8 *)"Fail", 
-								(u8 *)"Fail", 
-								(u8 *)"2D", 
-								(u8 *)"3D"};
-	__align(sizeof(u8)) u8 dtbuf[50];   		//打印缓存数组
+	const u8 *fixModeList[4] = {(u8 *)"Fatal0", 
+								(u8 *)"Fatal1", 
+								(u8 *)"Success2D", 
+								(u8 *)"Success3D"};
+	__align(sizeof(char)) static char dtbuf[50];   		//snprintf栈缓存(必须为静态或全局)
 	
 	if (PD_Switch == PD_Enable && No_Data_Receive)
 	{	
 		//得到经度字符串
 		snprintf((char *)dtbuf, snprintfStackSpace, "\r\nLongitude: 			 %4.5f %1c\r\n", 
-			l -> Longitude, l -> EWsymbol);
-		printf("%s", dtbuf);
+			l -> Longitude, l -> EWsymbol), printf("%s", dtbuf);
 		usart1WaitForDataTransfer();		
 		//得到纬度字符串
 		snprintf((char *)dtbuf, snprintfStackSpace, "\r\nLatitude: 			 %4.5f %1c\r\n", 
-			l -> Latitude, l -> NSsymbol);
-		printf("%s", dtbuf);
+			l -> Latitude, l -> NSsymbol), printf("%s", dtbuf);
 		usart1WaitForDataTransfer();	
 		//得到高度字符串
 		snprintf((char *)dtbuf, snprintfStackSpace, "\r\nAltitude: 			 %4.2fm\r\n", 
-			l -> Altitude);
-		printf("%s", dtbuf);
+			l -> Altitude), printf("%s", dtbuf);
 		usart1WaitForDataTransfer();		
 		//得到速度字符串
 		snprintf((char *)dtbuf, snprintfStackSpace, "\r\nSpeed: 			 	 %4.3fkm/h\r\n", 
-			l -> Speed);
-		printf("%s", dtbuf);
+			l -> Speed), printf("%s", dtbuf);
 		usart1WaitForDataTransfer();		
 		//修正模式
 		snprintf((char *)dtbuf, snprintfStackSpace, "\r\nFix Mode: 			 %s\r\n", 
-			fixModeList[l -> FixMode]);
-		printf("%s", dtbuf);
+			fixModeList[l -> FixMode]), printf("%s", dtbuf);
 		usart1WaitForDataTransfer();		
 		//用于定位的GPS卫星数
 		snprintf((char *)dtbuf, snprintfStackSpace, "\r\nGPS+BD Valid Satellite: 	 %02d\r\n", 
-			l -> PosslNum);
-		printf("%s", dtbuf);
+			l -> PosslNum), printf("%s", dtbuf);
 		usart1WaitForDataTransfer();		
 		//可见GPS卫星数
 		snprintf((char *)dtbuf, snprintfStackSpace, "\r\nGPS Visible Satellite:  	 %02d\r\n", 
-			l -> SvNum);
-		printf("%s", dtbuf);
+			l -> SvNum), printf("%s", dtbuf);
 		usart1WaitForDataTransfer();		
 		//可见北斗卫星数
 		snprintf((char *)dtbuf, snprintfStackSpace, "\r\nBD Visible Satellite: 		 %02d\r\n", 
-			l -> BeidouSvNum);
-		printf("%s", dtbuf);
+			l -> BeidouSvNum), printf("%s", dtbuf);
 		usart1WaitForDataTransfer();		
 		//显示UTC日期
 		snprintf((char *)dtbuf, snprintfStackSpace, "\r\nUTC Date: 			 %04d/%02d/%02d\r\n", 
-			l -> GPS_UTC.year, l -> GPS_UTC.month, l -> GPS_UTC.date);
-		printf("%s", dtbuf);
+			l -> GPS_UTC.year, l -> GPS_UTC.month, l -> GPS_UTC.date), printf("%s", dtbuf);
 		usart1WaitForDataTransfer();		
 		//显示UTC时间
 		snprintf((char *)dtbuf, snprintfStackSpace, "\r\nUTC Time: 			 %02d:%02d:%02d\r\n", 
-			l -> GPS_UTC.hour, l -> GPS_UTC.min, l -> GPS_UTC.sec);
-		printf("%s", dtbuf);
+			l -> GPS_UTC.hour, l -> GPS_UTC.min, l -> GPS_UTC.sec), printf("%s", dtbuf);
 		usart1WaitForDataTransfer();
-		//打印信号状态
+		
+		//获取信号状态
 		printf("\r\nGPS Real-Time Signal Status: 	 ");
 		usart1WaitForDataTransfer();
 		printf((l -> CapSignal)? "Capture Sucess\r\n" : "Capture Fatal\r\n");
 		usart1WaitForDataTransfer();
-		//记录时间
+		
 		RTC_ReqOrderHandler();				
 	}
-	//缓存栈清零，释放内存
-	for (i = 0; i < 50; i++)
-		dtbuf[i] = 0;
 }
 
 //GPS数据获取转储任务处理
 void GPS_DataGatherTaskHandler (void)
 {
     u16 i;
-	u8 u2TempBuffer[USART2_MAX_RECV_LEN] = {0}; //存储USART2缓存数据
+	u8 u2TempBuffer[USART2_MAX_RECV_LEN] = {0}; 			//存储USART2缓存数据
 	
 	if (USART2RecDataOver)						
 	{
 		//读取USART2缓存数据
 		for (i = 0; i < (USART2DataLength); i++) 
-			u2TempBuffer[i] = USART2_RX_BUF[i];	//数据转移
-		USART2_RX_STA = 0;		   				//完成标志置位
-		u2TempBuffer[i] = 0;					//添加结束符
+			u2TempBuffer[i] = USART2_RX_BUF[i];				//数据转移
+		USART2_RX_STA = 0;		   							//完成标志置位
+		u2TempBuffer[i] = 0;								//添加结束符
 	}
 		
-	GPS_Analysis(&ggps, (u8 *)u2TempBuffer);	//GPS模块上传数据分析
-	GPS_TotalData_Storage(&ggps, &lgps);		//GPS数据转储处理
+	GPS_SkytraProtocolAnalysis(&ggps, (u8 *)u2TempBuffer);	//GPS模块上传数据分析
+	GPS_TotalData_Storage(&ggps, &lgps);					//GPS数据转储处理
 	if (GPSP_Switch == GPSP_Enable)
-		GPS_TotalData_Display(&lgps);			//实时转换打印
+		GPS_TotalData_Display(&lgps);						//实时转换打印
 }
 
 //====================================================================================================

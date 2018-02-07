@@ -140,24 +140,25 @@ typedef __packed struct
     u16 end;            		//结束符
 } SkyTra_NACK;
 
-//本地调用链接库，GPS所有可读数据
+//本地调用链接结构体
 typedef __packed struct
 {
-	float 			Longitude;
-	u8 				EWsymbol;
-	float 			Latitude;
-	u8				NSsymbol;
-	Bool_ClassType 	CapSignal;
-	float			Altitude;
-	float			Speed;
-	u8				FixMode;
-	u8 				PosslNum;
-	u8 				SvNum;
-	u8				BeidouSvNum;
-	nmea_utc_time 	GPS_UTC;
+	float 			Longitude;	//经度
+	u8 				EWsymbol;	//东西经标识
+	float 			Latitude;	//纬度
+	u8				NSsymbol;	//南北纬
+	Bool_ClassType 	CapSignal;	//捕获信号状态
+	float			Altitude;	//高度
+	float			Speed;		//速度
+	u8				FixMode;	//修正模式
+	u8 				PosslNum;	//用于定位卫星数
+	u8 				SvNum;		//可视化卫星数
+	u8				BeidouSvNum;//北斗可视化卫星数
+	nmea_utc_time 	GPS_UTC;	//UTC日期及时间
 } Local_GPSTotalData;
-extern Local_GPSTotalData lgps;
+
 extern nmea_msg ggps;
+extern Local_GPSTotalData lgps;
 
 //返回u32的pow函数
 #ifndef uint32_pow
@@ -166,7 +167,7 @@ extern nmea_msg ggps;
 
 static u8 NMEA_Comma_Pos (u8 *buf, u8 cx);
 static int NMEA_Str2num (u8 *buf, u8*dx);
-static void GPS_Analysis (nmea_msg *gpsx, u8 *buf);
+//局部协议分析
 static void NMEA_GPGSV_Analysis (nmea_msg *gpsx, u8 *buf);
 static void NMEA_BDGSV_Analysis (nmea_msg *gpsx, u8 *buf);
 static void NMEA_GNGGA_Analysis (nmea_msg *gpsx, u8 *buf);
@@ -180,10 +181,11 @@ static u8 SkyTra_Cfg_Prt (u32 baud_id);
 static u8 SkyTra_Cfg_Tp (u32 width);
 static u8 SkyTra_Cfg_Rate (u8 Frep);
 static void SkyTra_Send_Date (u8* dbuf, u16 len);
+static void GPS_SkytraProtocolAnalysis (nmea_msg *gpsx, u8 *buf);			//整体调用分析
 //GPS应用
-void GPS_TotalConfigInit (void);			//GPS初始化
+void GPS_TotalConfigInit (void);											//GPS初始化
 static void GPS_TotalData_Storage (nmea_msg *gpsx, Local_GPSTotalData *l);	//存储GPS数据
-static void GPS_TotalData_Display (Local_GPSTotalData *l);	//GPS数据显示
+static void GPS_TotalData_Display (Local_GPSTotalData *l);					//GPS数据显示
 void GPS_DataGatherTaskHandler (void);	
 
 
