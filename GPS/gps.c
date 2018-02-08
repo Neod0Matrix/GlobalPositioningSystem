@@ -2,7 +2,7 @@
 //code by </MATRIX>@Neod Anderjon
 //author: Neod Anderjon
 //====================================================================================================
-//GPS库
+//GPS底层驱动库 S1216F8-BD
 
 nmea_msg ggps; 								//直接GPS信息
 Local_GPSTotalData lgps;					//本地GPS缓存结构体
@@ -444,7 +444,6 @@ void GPS_TotalConfigInit (void)
 	
     if (SkyTra_Cfg_Rate(5) != 0)			//设置定位信息更新速度
     {
-		__ShellHeadSymbol__; U1SD("GPS Module S1216F8-BD Setting\r\n");
         do
         {
             USART2_Init(9600);				//初始化串口2波特率为9600
@@ -454,7 +453,6 @@ void GPS_TotalConfigInit (void)
         }
 		//配置SkyTraqF8-BD的更新速率
         while (SkyTra_Cfg_Rate(5) != 0 && key != 0);
-		__ShellHeadSymbol__; U1SD("GPS Module S1216F8-BD Set Done\r\n");
         delay_ms(400);						//等待芯片初始化完成
     }
 }
@@ -462,59 +460,55 @@ void GPS_TotalConfigInit (void)
 //GPS数据处理存储
 static void GPS_TotalData_Storage (nmea_msg *gps, Local_GPSTotalData *l)
 {
-	static Bool_ClassType capSignal = False;		//捕获到信号标志		
+	static Bool_ClassType capSignal = False;			//捕获到信号标志		
 	
-	l -> Longitude = gps -> longitude / 100000;		//经度
-	l -> EWsymbol = gps -> ewhemi;					//经度标识
-	
-	l -> Latitude = gps -> latitude / 100000;		//纬度		
-	l -> NSsymbol = gps -> nshemi;					//纬度标识
+	l -> Longitude 		= gps -> longitude / 100000;	//经度
+	l -> EWsymbol 		= gps -> ewhemi;				//经度标识
+	l -> Latitude 		= gps -> latitude / 100000;		//纬度		
+	l -> NSsymbol 		= gps -> nshemi;				//纬度标识
+	l -> Altitude 		= gps -> altitude / 10;			//高度
+	l -> Speed 			= gps -> speed / 1000;			//速度
 
-	//捕获到信号标志(仅判断经纬度状态)
-	if (l -> Longitude != 0 && l -> Latitude != 0 && !capSignal)
+	if (gps -> fixmode <= 3)							//定位状态
+		l -> FixMode 	= gps -> fixmode;			
+	//捕获到信号标志
+	if ((l -> FixMode == 2 || l -> FixMode == 3) && !capSignal)
 	{
-		capSignal = True;							//置位
+		capSignal = True;								//置位
 		Beep_Once; 
 		Beep_Once;
 	}
 	//丢失信号标志
-	else if (l -> Longitude == 0 && l -> Latitude == 0 && capSignal)
+	if ((l -> FixMode == 0 || l -> FixMode == 1) && capSignal)
 	{
-		capSignal = False;							//置位
+		capSignal = False;								//置位
 		Beep_Once; 
 		Beep_Once;
 	}
-	l -> CapSignal = capSignal;						//信号标识
+	l -> CapSignal 		= capSignal;					//信号标识
 	
-	l -> Altitude = gps -> altitude / 10;			//高度
-	
-	l -> Speed = gps -> speed / 1000;				//速度
-	
-	if (gps -> fixmode <= 3)						//定位状态
-		l -> FixMode = gps -> fixmode;			
-	
-	l -> PosslNum = gps -> posslnum;				//用于定位的GPS卫星数
-	l -> SvNum = gps -> svnum % 100;				//可见GPS卫星数
-	l -> BeidouSvNum = gps -> beidou_svnum % 100;	//可见北斗卫星数
+	l -> PosslNum 		= gps -> posslnum;				//用于定位的GPS卫星数
+	l -> SvNum 			= gps -> svnum % 100;			//可见GPS卫星数
+	l -> BeidouSvNum 	= gps -> beidou_svnum % 100;	//可见北斗卫星数
 	
 	//显示UTC日期
-	l -> GPS_UTC.year = gps -> utc.year;
-	l -> GPS_UTC.month = gps -> utc.month;
-	l -> GPS_UTC.date = gps -> utc.date;
+	l -> GPS_UTC.year 	= gps -> utc.year;
+	l -> GPS_UTC.month 	= gps -> utc.month;
+	l -> GPS_UTC.date 	= gps -> utc.date;
 	//显示UTC时间
-	l -> GPS_UTC.hour = gps -> utc.hour;
-	l -> GPS_UTC.min = gps -> utc.min;
-	l -> GPS_UTC.sec = gps -> utc.sec;
+	l -> GPS_UTC.hour 	= gps -> utc.hour;
+	l -> GPS_UTC.min 	= gps -> utc.min;
+	l -> GPS_UTC.sec 	= gps -> utc.sec;
 }
 
 //打印GPS定位信息
 static void GPS_TotalData_Display (Local_GPSTotalData *l)
 {	
 	//定位修正模式字符串
-	const u8 *fixModeList[4] = {(u8 *)"Fatal0", 
-								(u8 *)"Fatal1", 
-								(u8 *)"Success2D", 
-								(u8 *)"Success3D"};
+	const u8 *fixModeList[4] = {(u8*)"Fatal0", 
+								(u8*)"Fatal1", 
+								(u8*)"Success2D", 
+								(u8*)"Success3D"};
 	__align(sizeof(char)) static char dtbuf[50];   		//snprintf栈缓存(必须为静态或全局)
 	
 	if (PD_Switch == PD_Enable && No_Data_Receive)
@@ -563,7 +557,7 @@ static void GPS_TotalData_Display (Local_GPSTotalData *l)
 		//获取信号状态
 		printf("\r\nGPS Real-Time Signal Status: 	 ");
 		usart1WaitForDataTransfer();
-		printf((l -> CapSignal)? "Capture Sucess\r\n" : "Capture Fatal\r\n");
+		printf((l -> CapSignal)? "Capture Success\r\n" : "Capture Fatal\r\n");
 		usart1WaitForDataTransfer();
 		
 		RTC_ReqOrderHandler();				
@@ -574,21 +568,21 @@ static void GPS_TotalData_Display (Local_GPSTotalData *l)
 void GPS_DataGatherTaskHandler (void)
 {
     u16 i;
-	u8 u2TempBuffer[USART2_MAX_RECV_LEN] = {0}; 			//存储USART2缓存数据
+	u8 u2TempBuffer[USART2_MAX_RECV_LEN] = {0}; 				//存储USART2缓存数据
 	
 	if (USART2RecDataOver)						
 	{
 		//读取USART2缓存数据
 		for (i = 0; i < (USART2DataLength); i++) 
-			u2TempBuffer[i] = USART2_RX_BUF[i];				//数据转移
-		USART2_RX_STA = 0;		   							//完成标志置位
-		u2TempBuffer[i] = 0;								//添加结束符
-	}
+			u2TempBuffer[i] = USART2_RX_BUF[i];					//数据转移
+		USART2_RX_STA = 0;		   								//完成标志置位
+		u2TempBuffer[i] = 0;									//末尾添加结束符
 		
-	GPS_SkytraProtocolAnalysis(&ggps, (u8 *)u2TempBuffer);	//GPS模块上传数据分析
-	GPS_TotalData_Storage(&ggps, &lgps);					//GPS数据转储处理
-	if (GPSP_Switch == GPSP_Enable)
-		GPS_TotalData_Display(&lgps);						//实时转换打印
+		GPS_SkytraProtocolAnalysis(&ggps, (u8 *)u2TempBuffer);	//GPS模块上传数据分析
+		GPS_TotalData_Storage(&ggps, &lgps);					//GPS数据转储处理
+		if (GPSP_Switch == GPSP_Enable)
+			GPS_TotalData_Display(&lgps);						//实时转换打印
+	}
 }
 
 //====================================================================================================

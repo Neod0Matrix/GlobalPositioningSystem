@@ -299,7 +299,10 @@ void UIScreen_DisplayHandler (void)
 			@EmbeddedBreakerCore Extern API Insert
 		*/
 		case 4:
-			OLED_DisplayGPS();
+			OLED_DisplayGPS_LonLat();
+			break;
+		case 5:
+			OLED_DisplayGPS_AltSpd();
 			break;
 		}
 	}

@@ -70,8 +70,11 @@ void OLED_ScreenP4_Const (void)
 	OLED_Refresh_Gram();
 }
 
-//OLED GlobalPositioningSystem数据显示，链接到UIScreen_DisplayHandler函数显示
-void OLED_DisplayGPS (void)
+/*
+	OLED GlobalPositioningSystem 经纬度数据显示
+	链接到UIScreen_DisplayHandler函数显示
+*/
+void OLED_DisplayGPS_LonLat (void)
 {	
 	//经度
 	OLED_ShowString(strPos(0u), ROW1, (const u8*)"Longi:", Font_Size);							//Longitude经度
@@ -85,6 +88,25 @@ void OLED_DisplayGPS (void)
 	OLED_ShowString(strPos(9u), ROW2, (const u8*)".", Font_Size);	
 	OLED_ShowNum(strPos(10u), ROW2, ((u32)(lgps.Latitude * 10000) % 10000), 4u, Font_Size);		//小数位4位
 	OLED_ShowString(strPos(14u), ROW2, (const u8*)(&lgps.NSsymbol), Font_Size);					//南北纬标识
+	OLED_Refresh_Gram();
+}
+
+/*
+	OLED GlobalPositioningSystem 高度速度数据显示
+	链接到UIScreen_DisplayHandler函数显示
+*/
+void OLED_DisplayGPS_AltSpd (void)
+{	
+	//高度
+	OLED_ShowString(strPos(0u), ROW1, (const u8*)"Altit:", Font_Size);							//Altitude高度
+	OLED_ShowNum(strPos(6u), ROW1, lgps.Altitude, 3u, Font_Size);								//整数位3位
+	OLED_ShowString(strPos(9u), ROW1, (const u8*)".", Font_Size);	
+	OLED_ShowNum(strPos(10u), ROW1, ((u32)(lgps.Altitude * 10000) % 10000), 4u, Font_Size);		//小数位4位
+	//速度
+	OLED_ShowString(strPos(0u), ROW2, (const u8*)"Speed:", Font_Size);							//Speed速度
+	OLED_ShowNum(strPos(6u), ROW2, lgps.Speed, 3u, Font_Size);									//整数位3位
+	OLED_ShowString(strPos(9u), ROW2, (const u8*)".", Font_Size);	
+	OLED_ShowNum(strPos(10u), ROW2, ((u32)(lgps.Speed * 10000) % 10000), 4u, Font_Size);		//小数位4位
 	OLED_Refresh_Gram();
 }
 

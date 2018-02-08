@@ -46,10 +46,11 @@ typedef enum
 #define Max_Option_Value		16u
 
 //裁去ui.h中定义的总切屏数到这里来重新定义
-#define ScreenPageCount			5u						
+#define ScreenPageCount			6u						
 
 void OLED_ScreenP4_Const (void);
-void OLED_DisplayGPS (void);
+void OLED_DisplayGPS_LonLat (void);
+void OLED_DisplayGPS_AltSpd (void);
 
 //对外API接口
 extern void U1RSD_example (void);						//串口处理例程封装

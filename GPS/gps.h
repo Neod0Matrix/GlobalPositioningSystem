@@ -3,10 +3,10 @@
 //code by </MATRIX>@Neod Anderjon
 //author: Neod Anderjon
 //====================================================================================================
-//GPS库
+//GPS底层驱动库 S1216F8-BD
 
-#define __GPS_Model__			"S1216"	//GPS型号
-#define Support_Satellite_Num	12u		//定义支持的卫星数量
+#define __GPS_Model__			"S1216F8-BD"	//GPS型号
+#define Support_Satellite_Num	12u				//定义支持的卫星数量
 
 //GPS NMEA-0183协议重要参数结构体定义
 //卫星信息
