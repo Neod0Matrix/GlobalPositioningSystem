@@ -16,7 +16,6 @@ void prio1TaskBus (void)
 void prio2TaskBus (void)
 {
 	LVD_EW_Handler();								//输入电压低压监测
-	RTC_DataStorage(calendar);						//RTC时间寄存
 	
 	/*
 		@EmbeddedBreakerCore Extern API Insert
