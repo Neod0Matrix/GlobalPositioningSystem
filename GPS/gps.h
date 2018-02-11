@@ -187,7 +187,8 @@ void GPS_TotalConfigInit (void);											//GPS初始化
 static void GPS_TotalData_Storage (nmea_msg *gpsx, Local_GPSTotalData *l);	//存储GPS数据
 static void GPS_TotalData_Display (Local_GPSTotalData *l);					//GPS数据显示
 void GPS_DataGatherTaskHandler (void);	
-
+void OLED_DisplayGPS_LonLat (Local_GPSTotalData *l);
+void OLED_DisplayGPS_AltSpd (Local_GPSTotalData *l);
 
 //====================================================================================================
 //code by </MATRIX>@Neod Anderjon

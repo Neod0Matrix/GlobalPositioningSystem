@@ -4,13 +4,13 @@
 //====================================================================================================
 /*
 	本地任务调度管理
-	在任务数量不多的情况下，裸跑比RTOS速度快
+	在任务数量不多的情况下，裸跑比RTOS速度快，
 	在任务数量多占用时长差距大时RTOS性能更好
 */
 
 void prio1TaskBus (void)
 {
-	OrderResponse_Handler();						//指令响应函数	
+	OrderResponse_Handler();						//指令响应函数
 }
 
 void prio2TaskBus (void)
@@ -20,8 +20,7 @@ void prio2TaskBus (void)
 	/*
 		@EmbeddedBreakerCore Extern API Insert
 	*/
-	GPS_DataGatherTaskHandler();					//GPS数据获取任务进程处理	
-	
+	Modules_NonInterruptTask();
 #ifdef useRTOSinProject
 	Semaphore_Handler();							//信号量处理
 #endif
@@ -29,8 +28,17 @@ void prio2TaskBus (void)
 
 void prio3TaskBus (void)
 {
+#ifdef useRTOSinProject
+	CPU_SR_ALLOC();
+#endif
 	MCU_Temperature_Detector();						//温度监测
+#ifdef useRTOSinProject
+	OS_CRITICAL_ENTER();
+#endif
 	UIScreen_DisplayHandler();						//UI显示器
+#ifdef useRTOSinProject
+	OS_CRITICAL_EXIT();
+#endif
 }
 
 void prio4TaskBus (void)
@@ -56,7 +64,7 @@ void Streak_TaskRun (void)
 //RTOS调用接口
 void RTOS_TaskMgr (void)
 {
-	ucosiii_TaskMgr();								//ucos
+	ucosiii_TaskMgr();										//ucos
 }
 
 //====================================================================================================

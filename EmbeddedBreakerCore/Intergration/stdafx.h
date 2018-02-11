@@ -69,9 +69,9 @@
 //UI
 #include "ui.h"											//OLED UI sample
 
-//链接所有GlobalPositioningSystem模块的头文件
-#include "gps.h"										//GPS模块底层驱动
-#include "link.h"										//调用模块链接
+//模块
+#include "link.h"										//模块对框架链接最末端文件
+#include "gps.h"										//GPS S1216底层驱动
 
 //===================================================================================================
 //code by </MATRIX>@Neod Anderjon
