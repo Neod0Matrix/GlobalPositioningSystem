@@ -143,13 +143,13 @@ typedef __packed struct
 //本地调用链接结构体
 typedef __packed struct
 {
-	float 			Longitude;	//经度
+	double 			Longitude;	//经度
 	u8 				EWsymbol;	//东西经标识
-	float 			Latitude;	//纬度
+	double 			Latitude;	//纬度
 	u8				NSsymbol;	//南北纬
 	Bool_ClassType 	CapSignal;	//捕获信号状态
-	float			Altitude;	//高度
-	float			Speed;		//速度
+	double			Altitude;	//高度
+	double			Speed;		//速度
 	u8				FixMode;	//修正模式
 	u8 				PosslNum;	//用于定位卫星数
 	u8 				SvNum;		//可视化卫星数

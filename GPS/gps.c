@@ -462,12 +462,12 @@ static void GPS_TotalData_Storage (nmea_msg *gps, Local_GPSTotalData *l)
 {
 	static Bool_ClassType capSignal = False;			//捕获到信号标志		
 	
-	l -> Longitude 		= gps -> longitude / 100000;	//经度
-	l -> EWsymbol 		= gps -> ewhemi;				//经度标识
-	l -> Latitude 		= gps -> latitude / 100000;		//纬度		
-	l -> NSsymbol 		= gps -> nshemi;				//纬度标识
-	l -> Altitude 		= gps -> altitude / 10;			//高度
-	l -> Speed 			= gps -> speed / 1000;			//速度
+	l -> Longitude 		= (double)(gps -> longitude) / 100000.f;	//经度
+	l -> EWsymbol 		= gps -> ewhemi;							//经度标识
+	l -> Latitude 		= (double)(gps -> latitude) / 100000.f;		//纬度		
+	l -> NSsymbol 		= gps -> nshemi;							//纬度标识
+	l -> Altitude 		= (double)(gps -> altitude) / 10.f;			//高度
+	l -> Speed 			= (double)(gps -> speed) / 1000.f;			//速度
 
 	if (gps -> fixmode <= 3)							//定位状态
 		l -> FixMode 	= gps -> fixmode;			
@@ -509,49 +509,47 @@ static void GPS_TotalData_Display (Local_GPSTotalData *l)
 								(u8*)"Fatal1", 
 								(u8*)"Success2D", 
 								(u8*)"Success3D"};
-	__align(sizeof(char)) static char dtbuf[50];   		//snprintf栈缓存(必须为静态或全局)
-	
+								
 	if (PD_Switch == PD_Enable && No_Data_Receive)
 	{	
+		/*
+			经纬度，高度，速度信息由OLED显示
+			STM32F103的浮点处理能力有限
+			快速缓存浮点数打印容易在小数点处理上发生硬件错误
+			故这里直接注释掉浮点信息的打印
+		*/
+		/*
 		//得到经度字符串
-		snprintf((char *)dtbuf, snprintfStackSpace, "\r\nLongitude: 			 %4.5f %1c\r\n", 
-			l -> Longitude, l -> EWsymbol), printf("%s", dtbuf);
+		printf("\r\nLongitude: 			 %4.4lf %1c\r\n", l -> Longitude, l -> EWsymbol);
 		usart1WaitForDataTransfer();		
 		//得到纬度字符串
-		snprintf((char *)dtbuf, snprintfStackSpace, "\r\nLatitude: 			 %4.5f %1c\r\n", 
-			l -> Latitude, l -> NSsymbol), printf("%s", dtbuf);
+		printf("\r\nLatitude: 			 %4.4lf %1c\r\n", l -> Latitude, l -> NSsymbol);
 		usart1WaitForDataTransfer();	
 		//得到高度字符串
-		snprintf((char *)dtbuf, snprintfStackSpace, "\r\nAltitude: 			 %4.2fm\r\n", 
-			l -> Altitude), printf("%s", dtbuf);
+		printf("\r\nAltitude: 			 %4.2lfm\r\n", l -> Altitude);
 		usart1WaitForDataTransfer();		
 		//得到速度字符串
-		snprintf((char *)dtbuf, snprintfStackSpace, "\r\nSpeed: 			 	 %4.3fkm/h\r\n", 
-			l -> Speed), printf("%s", dtbuf);
+		printf("\r\nSpeed: 			 	 %4.3lfkm/h\r\n", l -> Speed);
 		usart1WaitForDataTransfer();		
+		*/
+		
 		//修正模式
-		snprintf((char *)dtbuf, snprintfStackSpace, "\r\nFix Mode: 			 %s\r\n", 
-			fixModeList[l -> FixMode]), printf("%s", dtbuf);
+		printf("\r\nFix Mode: 			 %s\r\n", fixModeList[l -> FixMode]);
 		usart1WaitForDataTransfer();		
 		//用于定位的GPS卫星数
-		snprintf((char *)dtbuf, snprintfStackSpace, "\r\nGPS+BD Valid Satellite: 	 %02d\r\n", 
-			l -> PosslNum), printf("%s", dtbuf);
+		printf("\r\nGPS+BD Valid Satellite: 	 %02d\r\n", l -> PosslNum);
 		usart1WaitForDataTransfer();		
 		//可见GPS卫星数
-		snprintf((char *)dtbuf, snprintfStackSpace, "\r\nGPS Visible Satellite:  	 %02d\r\n", 
-			l -> SvNum), printf("%s", dtbuf);
+		printf("\r\nGPS Visible Satellite:  	 %02d\r\n", l -> SvNum);
 		usart1WaitForDataTransfer();		
 		//可见北斗卫星数
-		snprintf((char *)dtbuf, snprintfStackSpace, "\r\nBD Visible Satellite: 		 %02d\r\n", 
-			l -> BeidouSvNum), printf("%s", dtbuf);
+		printf("\r\nBD Visible Satellite: 		 %02d\r\n", l -> BeidouSvNum);
 		usart1WaitForDataTransfer();		
 		//显示UTC日期
-		snprintf((char *)dtbuf, snprintfStackSpace, "\r\nUTC Date: 			 %04d/%02d/%02d\r\n", 
-			l -> GPS_UTC.year, l -> GPS_UTC.month, l -> GPS_UTC.date), printf("%s", dtbuf);
+		printf("\r\nUTC Date: 			 %04d/%02d/%02d\r\n", l -> GPS_UTC.year, l -> GPS_UTC.month, l -> GPS_UTC.date);
 		usart1WaitForDataTransfer();		
 		//显示UTC时间
-		snprintf((char *)dtbuf, snprintfStackSpace, "\r\nUTC Time: 			 %02d:%02d:%02d\r\n", 
-			l -> GPS_UTC.hour, l -> GPS_UTC.min, l -> GPS_UTC.sec), printf("%s", dtbuf);
+		printf("\r\nUTC Time: 			 %02d:%02d:%02d\r\n", l -> GPS_UTC.hour, l -> GPS_UTC.min, l -> GPS_UTC.sec);
 		usart1WaitForDataTransfer();
 		
 		//获取信号状态
@@ -559,7 +557,7 @@ static void GPS_TotalData_Display (Local_GPSTotalData *l)
 		usart1WaitForDataTransfer();
 		printf((l -> CapSignal)? "Capture Success\r\n" : "Capture Fatal\r\n");
 		usart1WaitForDataTransfer();
-		
+	
 		RTC_ReqOrderHandler();				
 	}
 }
@@ -592,17 +590,17 @@ void GPS_DataGatherTaskHandler (void)
 void OLED_DisplayGPS_LonLat (Local_GPSTotalData *l)
 {	
 	//经度
-	OLED_ShowString(strPos(0u), ROW1, (const u8*)"Longi:", Font_Size);							//Longitude经度
-	OLED_ShowNum(strPos(6u), ROW1, l -> Longitude, 3u, Font_Size);								//整数位3位
+	OLED_ShowString(strPos(0u), ROW1, (const u8*)"Longi:", Font_Size);								//Longitude经度
+	OLED_ShowNum(strPos(6u), ROW1, l -> Longitude, 3u, Font_Size);									//整数位3位
 	OLED_ShowString(strPos(9u), ROW1, (const u8*)".", Font_Size);	
-	OLED_ShowNum(strPos(10u), ROW1, ((u32)(l -> Longitude * 10000) % 10000), 4u, Font_Size);	//小数位4位
-	OLED_ShowString(strPos(14u), ROW1, (const u8*)(&l -> EWsymbol), Font_Size);					//东西经标识
+	OLED_ShowNum_Supple0(strPos(10u), ROW1, ((u32)(l -> Longitude * 10000) % 10000), 4u, Font_Size);//小数位4位
+	OLED_ShowString(strPos(14u), ROW1, (const u8*)((l -> EWsymbol == 'E')? "E":"W"), Font_Size);	//东西经标识
 	//纬度
-	OLED_ShowString(strPos(0u), ROW2, (const u8*)"Latit:", Font_Size);							//Latitude纬度
-	OLED_ShowNum(strPos(6u), ROW2, l -> Latitude, 3u, Font_Size);								//整数位3位
+	OLED_ShowString(strPos(0u), ROW2, (const u8*)"Latit:", Font_Size);								//Latitude纬度
+	OLED_ShowNum(strPos(6u), ROW2, l -> Latitude, 3u, Font_Size);									//整数位3位
 	OLED_ShowString(strPos(9u), ROW2, (const u8*)".", Font_Size);	
-	OLED_ShowNum(strPos(10u), ROW2, ((u32)(l -> Latitude * 10000) % 10000), 4u, Font_Size);		//小数位4位
-	OLED_ShowString(strPos(14u), ROW2, (const u8*)(&l -> NSsymbol), Font_Size);					//南北纬标识
+	OLED_ShowNum_Supple0(strPos(10u), ROW2, ((u32)(l -> Latitude * 10000) % 10000), 4u, Font_Size);	//小数位4位				
+	OLED_ShowString(strPos(14u), ROW2, (const u8*)((l -> NSsymbol == 'N')? "N":"S"), Font_Size);	//南北纬标识
 	OLED_Refresh_Gram();
 }
 
@@ -616,12 +614,12 @@ void OLED_DisplayGPS_AltSpd (Local_GPSTotalData *l)
 	OLED_ShowString(strPos(0u), ROW1, (const u8*)"Altit:", Font_Size);							//Altitude高度
 	OLED_ShowNum(strPos(6u), ROW1, l -> Altitude, 3u, Font_Size);								//整数位3位
 	OLED_ShowString(strPos(9u), ROW1, (const u8*)".", Font_Size);	
-	OLED_ShowNum(strPos(10u), ROW1, ((u32)(l -> Altitude * 10000) % 10000), 4u, Font_Size);		//小数位4位
+	OLED_ShowNum_Supple0(strPos(10u), ROW1, ((u32)(l -> Altitude * 10000) % 10000), 4u, Font_Size);	//小数位4位
 	//速度
 	OLED_ShowString(strPos(0u), ROW2, (const u8*)"Speed:", Font_Size);							//Speed速度
 	OLED_ShowNum(strPos(6u), ROW2, l -> Speed, 3u, Font_Size);									//整数位3位
 	OLED_ShowString(strPos(9u), ROW2, (const u8*)".", Font_Size);	
-	OLED_ShowNum(strPos(10u), ROW2, ((u32)(l -> Speed * 10000) % 10000), 4u, Font_Size);		//小数位4位
+	OLED_ShowNum_Supple0(strPos(10u), ROW2, ((u32)(l -> Speed * 10000) % 10000), 4u, Font_Size);//小数位4位
 	OLED_Refresh_Gram();
 }
 

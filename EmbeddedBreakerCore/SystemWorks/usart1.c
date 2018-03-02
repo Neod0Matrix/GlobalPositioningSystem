@@ -203,7 +203,7 @@ void USART1_IRQHandler (void)
 #endif
 } 
 
-//串口1,printf 函数
+//串口1,printf函数
 //确保一次发送数据不超过USART1_MAX_SEND_LEN字节
 void u1_printf (char* fmt, ...)
 {
