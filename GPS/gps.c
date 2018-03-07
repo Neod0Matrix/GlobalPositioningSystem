@@ -462,12 +462,12 @@ static void GPS_TotalData_Storage (nmea_msg *gps, Local_GPSTotalData *l)
 {
 	static Bool_ClassType capSignal = False;			//捕获到信号标志		
 	
-	l -> Longitude 		= (double)(gps -> longitude) / 100000.f;	//经度
-	l -> EWsymbol 		= gps -> ewhemi;							//经度标识
-	l -> Latitude 		= (double)(gps -> latitude) / 100000.f;		//纬度		
-	l -> NSsymbol 		= gps -> nshemi;							//纬度标识
-	l -> Altitude 		= (double)(gps -> altitude) / 10.f;			//高度
-	l -> Speed 			= (double)(gps -> speed) / 1000.f;			//速度
+	l -> Longitude 		= (float)(gps -> longitude) / 100000.f;	//经度
+	l -> EWsymbol 		= gps -> ewhemi;						//经度标识
+	l -> Latitude 		= (float)(gps -> latitude) / 100000.f;	//纬度		
+	l -> NSsymbol 		= gps -> nshemi;						//纬度标识
+	l -> Altitude 		= (float)(gps -> altitude) / 10.f;		//高度
+	l -> Speed 			= (float)(gps -> speed) / 1000.f;		//速度
 
 	if (gps -> fixmode <= 3)							//定位状态
 		l -> FixMode 	= gps -> fixmode;			
@@ -520,19 +520,18 @@ static void GPS_TotalData_Display (Local_GPSTotalData *l)
 		*/
 		/*
 		//得到经度字符串
-		printf("\r\nLongitude: 			 %4.4lf %1c\r\n", l -> Longitude, l -> EWsymbol);
+		printf("\r\nLongitude: 			 %.5lf %1c\r\n", l -> Longitude, l -> EWsymbol);
 		usart1WaitForDataTransfer();		
 		//得到纬度字符串
-		printf("\r\nLatitude: 			 %4.4lf %1c\r\n", l -> Latitude, l -> NSsymbol);
+		printf("\r\nLatitude: 			 %.5lf %1c\r\n", l -> Latitude, l -> NSsymbol);
 		usart1WaitForDataTransfer();	
 		//得到高度字符串
-		printf("\r\nAltitude: 			 %4.2lfm\r\n", l -> Altitude);
+		printf("\r\nAltitude: 			 %.2lfm\r\n", l -> Altitude);
 		usart1WaitForDataTransfer();		
 		//得到速度字符串
-		printf("\r\nSpeed: 			 	 %4.3lfkm/h\r\n", l -> Speed);
+		printf("\r\nSpeed: 			 	 %.3lfkm/h\r\n", l -> Speed);
 		usart1WaitForDataTransfer();		
 		*/
-		
 		//修正模式
 		printf("\r\nFix Mode: 			 %s\r\n", fixModeList[l -> FixMode]);
 		usart1WaitForDataTransfer();		

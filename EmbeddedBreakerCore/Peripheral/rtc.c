@@ -34,11 +34,11 @@ void RTC_TimeInitSetting (void)
 {
 	//初设定，RTC寄存器断电更新
 	_start.w_year 	= 2018u;										//年
-	_start.w_month 	= 1u;											//月	
-	_start.w_date 	= 27u;											//日
-	_start.hour 	= 18u;											//时
-	_start.min 		= 33u;											//分
-	_start.sec 		= 34u;											//秒
+	_start.w_month 	= 3u;											//月	
+	_start.w_date 	= 6u;											//日
+	_start.hour 	= 20u;											//时
+	_start.min 		= 9u;											//分
+	_start.sec 		= 30u;											//秒
 	
 	//设置时间
 	RTC_Set(	_start.w_year, 

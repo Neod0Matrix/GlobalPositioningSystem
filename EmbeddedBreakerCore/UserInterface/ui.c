@@ -187,20 +187,12 @@ void UIScreen_DisplayHandler (void)
 		case 3:
 			OLED_StatusDetector();	
 			break;	
+		}
 		/*
 			@EmbeddedBreakerCore Extern API Insert
 		*/
-		case 4:
-//			if (MOE_Switch == MOE_Enable)
-//				OLED_DisplayModules();
-			if (MOE_Switch == MOE_Enable)
-				OLED_DisplayGPS_LonLat(&lgps);
-			break;
-		case 5:
-			if (MOE_Switch == MOE_Enable)
-				OLED_DisplayGPS_AltSpd(&lgps);
-			break;
-		}
+		if (MOE_Switch == MOE_Enable)
+			OLED_DisplayModules(pageUpdate);
 	}
 }
 
