@@ -564,18 +564,20 @@ static void GPS_TotalData_Display (Local_GPSTotalData *l)
 //GPS数据获取转储任务处理
 void GPS_DataGatherTaskHandler (void)
 {
-    u16 i;
-	u8 u2TempBuffer[USART2_MAX_RECV_LEN] = {0}; 				//存储USART2缓存数据
+    u16 i;				
+	u8* u2TempBuffer;											//存储USART2缓存数据
 	
 	if (USART2RecDataOver)						
 	{
+		u2TempBuffer = (u8*)mymalloc(sizeof(u8) * USART2_MAX_RECV_LEN);
 		//读取USART2缓存数据
 		for (i = 0; i < (USART2DataLength); i++) 
-			u2TempBuffer[i] = USART2_RX_BUF[i];					//数据转移
+			*(u2TempBuffer + i) = *(USART2_RX_BUF + i);			//数据转移
 		USART2_RX_STA = 0;		   								//完成标志置位
-		u2TempBuffer[i] = 0;									//末尾添加结束符
+		*(u2TempBuffer + i) = 0;								//末尾添加结束符
 		
 		GPS_SkytraProtocolAnalysis(&ggps, (u8 *)u2TempBuffer);	//GPS模块上传数据分析
+		myfree(u2TempBuffer);
 		GPS_TotalData_Storage(&ggps, &lgps);					//GPS数据转储处理
 		if (GPSP_Switch == GPSP_Enable)
 			GPS_TotalData_Display(&lgps);						//实时转换打印
