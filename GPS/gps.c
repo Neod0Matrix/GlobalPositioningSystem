@@ -592,11 +592,11 @@ void OLED_DisplayGPS_LonLat (Local_GPSTotalData *l)
 {	
 	//经度
 	snprintf((char*)oled_dtbuf, OneRowMaxWord, ("Longi:%8.4f%c"), l -> Longitude, l -> EWsymbol);
-	OLED_ShowString(strPos(0u), ROW1, (const u8*)oled_dtbuf, Font_Size);
+	OLED_ShowString(strPos(0u), ROW1, (StringCache*)oled_dtbuf, Font_Size);
 	
 	//纬度
 	snprintf((char*)oled_dtbuf, OneRowMaxWord, ("Latit:%8.4f%c"), l -> Latitude, l -> NSsymbol);
-	OLED_ShowString(strPos(0u), ROW2, (const u8*)oled_dtbuf, Font_Size);
+	OLED_ShowString(strPos(0u), ROW2, (StringCache*)oled_dtbuf, Font_Size);
 	OLED_Refresh_Gram();
 }
 
@@ -608,10 +608,10 @@ void OLED_DisplayGPS_AltSpd (Local_GPSTotalData *l)
 {	
 	//高度
 	snprintf((char*)oled_dtbuf, OneRowMaxWord, ("Altit:%8.4f"), l -> Altitude);
-	OLED_ShowString(strPos(0u), ROW1, (const u8*)oled_dtbuf, Font_Size);
+	OLED_ShowString(strPos(0u), ROW1, (StringCache*)oled_dtbuf, Font_Size);
 	//速度
 	snprintf((char*)oled_dtbuf, OneRowMaxWord, ("Speed:%8.4f"), l -> Speed);
-	OLED_ShowString(strPos(0u), ROW2, (const u8*)oled_dtbuf, Font_Size);
+	OLED_ShowString(strPos(0u), ROW2, (StringCache*)oled_dtbuf, Font_Size);
 	OLED_Refresh_Gram();
 }
 
