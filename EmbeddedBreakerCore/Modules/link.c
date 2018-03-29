@@ -54,10 +54,10 @@ void OLED_DisplayModules (u8 page)
 {
 	switch (page)
 	{
-	case 4:
+	case 5:
 		OLED_DisplayGPS_LonLat(&lgps);			//经纬度
 		break;
-	case 5:
+	case 6:
 		OLED_DisplayGPS_AltSpd(&lgps);			//高度速度
 		break;
 	}
