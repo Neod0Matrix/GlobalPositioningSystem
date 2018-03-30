@@ -509,53 +509,61 @@ static void GPS_TotalData_Display (Local_GPSTotalData *l)
 								(u8*)"Fatal1", 
 								(u8*)"Success2D", 
 								(u8*)"Success3D"};
+	
+	__align(8) char* gps_dtbuf;
 								
+	gps_dtbuf = (char*)mymalloc(sizeof(char) * 200);
 	if (PD_Switch == PD_Enable && No_Data_Receive)
 	{	
-		/*
-			经纬度，高度，速度信息由OLED显示
-			STM32F103的浮点处理能力有限
-			快速缓存浮点数打印容易在小数点处理上发生硬件错误
-			故这里直接注释掉浮点信息的打印
-		*/
-		/*
 		//得到经度字符串
-		printf("\r\nLongitude: 			 %.5lf %1c\r\n", l -> Longitude, l -> EWsymbol);
+		snprintf(gps_dtbuf, 200, "\r\nLongitude: 			 %.5lf %1c\r\n", l -> Longitude, l -> EWsymbol);
+		printf("%s", gps_dtbuf);
 		usart1WaitForDataTransfer();		
 		//得到纬度字符串
-		printf("\r\nLatitude: 			 %.5lf %1c\r\n", l -> Latitude, l -> NSsymbol);
+		snprintf(gps_dtbuf, 200, "\r\nLatitude: 			 %.5lf %1c\r\n", l -> Latitude, l -> NSsymbol);
+		printf("%s", gps_dtbuf);
 		usart1WaitForDataTransfer();	
 		//得到高度字符串
-		printf("\r\nAltitude: 			 %.2lfm\r\n", l -> Altitude);
+		snprintf(gps_dtbuf, 200, "\r\nAltitude: 			 %.2lfm\r\n", l -> Altitude);
+		printf("%s", gps_dtbuf);
 		usart1WaitForDataTransfer();		
 		//得到速度字符串
-		printf("\r\nSpeed: 			 	 %.3lfkm/h\r\n", l -> Speed);
+		snprintf(gps_dtbuf, 200, "\r\nSpeed: 			 	 %.3lfkm/h\r\n", l -> Speed);
+		printf("%s", gps_dtbuf);
 		usart1WaitForDataTransfer();		
-		*/
 		//修正模式
-		printf("\r\nFix Mode: 			 %s\r\n", fixModeList[l -> FixMode]);
+		snprintf(gps_dtbuf, 200, "\r\nFix Mode: 			 %s\r\n", fixModeList[l -> FixMode]);
+		printf("%s", gps_dtbuf);
 		usart1WaitForDataTransfer();		
 		//用于定位的GPS卫星数
-		printf("\r\nGPS+BD Valid Satellite: 	 %02d\r\n", l -> PosslNum);
+		snprintf(gps_dtbuf, 200, "\r\nGPS+BD Valid Satellite: 	 %02d\r\n", l -> PosslNum);
+		printf("%s", gps_dtbuf);
 		usart1WaitForDataTransfer();		
 		//可见GPS卫星数
-		printf("\r\nGPS Visible Satellite:  	 %02d\r\n", l -> SvNum);
+		snprintf(gps_dtbuf, 200, "\r\nGPS Visible Satellite:  	 %02d\r\n", l -> SvNum);
+		printf("%s", gps_dtbuf);
 		usart1WaitForDataTransfer();		
 		//可见北斗卫星数
-		printf("\r\nBD Visible Satellite: 		 %02d\r\n", l -> BeidouSvNum);
+		snprintf(gps_dtbuf, 200, "\r\nBD Visible Satellite: 		 %02d\r\n", l -> BeidouSvNum);
+		printf("%s", gps_dtbuf);
 		usart1WaitForDataTransfer();		
 		//显示UTC日期
-		printf("\r\nUTC Date: 			 %04d/%02d/%02d\r\n", l -> GPS_UTC.year, l -> GPS_UTC.month, l -> GPS_UTC.date);
+		snprintf(gps_dtbuf, 200, "\r\nUTC Date: 			 %04d/%02d/%02d\r\n", l -> GPS_UTC.year, l -> GPS_UTC.month, l -> GPS_UTC.date);
+		printf("%s", gps_dtbuf);
 		usart1WaitForDataTransfer();		
 		//显示UTC时间
-		printf("\r\nUTC Time: 			 %02d:%02d:%02d\r\n", l -> GPS_UTC.hour, l -> GPS_UTC.min, l -> GPS_UTC.sec);
+		snprintf(gps_dtbuf, 200, "\r\nUTC Time: 			 %02d:%02d:%02d\r\n", l -> GPS_UTC.hour, l -> GPS_UTC.min, l -> GPS_UTC.sec);
+		printf("%s", gps_dtbuf);
 		usart1WaitForDataTransfer();
 		
 		//获取信号状态
-		printf("\r\nGPS Real-Time Signal Status: 	 ");
+		snprintf(gps_dtbuf, 200, "\r\nGPS Real-Time Signal Status: 	 ");
+		printf("%s", gps_dtbuf);
 		usart1WaitForDataTransfer();
-		printf((l -> CapSignal)? "Capture Success\r\n" : "Capture Fatal\r\n");
+		snprintf(gps_dtbuf, 200, (l -> CapSignal)? "Capture Success\r\n" : "Capture Fatal\r\n");
+		printf("%s", gps_dtbuf);
 		usart1WaitForDataTransfer();
+		myfree((void*)gps_dtbuf);
 	
 		RTC_ReqOrderHandler();				
 	}
