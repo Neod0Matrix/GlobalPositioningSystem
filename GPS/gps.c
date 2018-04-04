@@ -513,60 +513,44 @@ static void GPS_TotalData_Display (Local_GPSTotalData *l)
 	__align(8) char* gps_dtbuf;
 								
 	gps_dtbuf = (char*)mymalloc(sizeof(char) * 200);
-	if (PD_Switch == PD_Enable && No_Data_Receive)
-	{	
-		//得到经度字符串
-		snprintf(gps_dtbuf, 200, "\r\nLongitude: 			 %.5lf %1c\r\n", l -> Longitude, l -> EWsymbol);
-		printf("%s", gps_dtbuf);
-		usart1WaitForDataTransfer();		
-		//得到纬度字符串
-		snprintf(gps_dtbuf, 200, "\r\nLatitude: 			 %.5lf %1c\r\n", l -> Latitude, l -> NSsymbol);
-		printf("%s", gps_dtbuf);
-		usart1WaitForDataTransfer();	
-		//得到高度字符串
-		snprintf(gps_dtbuf, 200, "\r\nAltitude: 			 %.2lfm\r\n", l -> Altitude);
-		printf("%s", gps_dtbuf);
-		usart1WaitForDataTransfer();		
-		//得到速度字符串
-		snprintf(gps_dtbuf, 200, "\r\nSpeed: 			 	 %.3lfkm/h\r\n", l -> Speed);
-		printf("%s", gps_dtbuf);
-		usart1WaitForDataTransfer();		
-		//修正模式
-		snprintf(gps_dtbuf, 200, "\r\nFix Mode: 			 %s\r\n", fixModeList[l -> FixMode]);
-		printf("%s", gps_dtbuf);
-		usart1WaitForDataTransfer();		
-		//用于定位的GPS卫星数
-		snprintf(gps_dtbuf, 200, "\r\nGPS+BD Valid Satellite: 	 %02d\r\n", l -> PosslNum);
-		printf("%s", gps_dtbuf);
-		usart1WaitForDataTransfer();		
-		//可见GPS卫星数
-		snprintf(gps_dtbuf, 200, "\r\nGPS Visible Satellite:  	 %02d\r\n", l -> SvNum);
-		printf("%s", gps_dtbuf);
-		usart1WaitForDataTransfer();		
-		//可见北斗卫星数
-		snprintf(gps_dtbuf, 200, "\r\nBD Visible Satellite: 		 %02d\r\n", l -> BeidouSvNum);
-		printf("%s", gps_dtbuf);
-		usart1WaitForDataTransfer();		
-		//显示UTC日期
-		snprintf(gps_dtbuf, 200, "\r\nUTC Date: 			 %04d/%02d/%02d\r\n", l -> GPS_UTC.year, l -> GPS_UTC.month, l -> GPS_UTC.date);
-		printf("%s", gps_dtbuf);
-		usart1WaitForDataTransfer();		
-		//显示UTC时间
-		snprintf(gps_dtbuf, 200, "\r\nUTC Time: 			 %02d:%02d:%02d\r\n", l -> GPS_UTC.hour, l -> GPS_UTC.min, l -> GPS_UTC.sec);
-		printf("%s", gps_dtbuf);
-		usart1WaitForDataTransfer();
-		
-		//获取信号状态
-		snprintf(gps_dtbuf, 200, "\r\nGPS Real-Time Signal Status: 	 ");
-		printf("%s", gps_dtbuf);
-		usart1WaitForDataTransfer();
-		snprintf(gps_dtbuf, 200, (l -> CapSignal)? "Capture Success\r\n" : "Capture Fatal\r\n");
-		printf("%s", gps_dtbuf);
-		usart1WaitForDataTransfer();
-		myfree((void*)gps_dtbuf);
-	
-		RTC_ReqOrderHandler();				
-	}
+	//得到经度字符串
+	snprintf(gps_dtbuf, 200, "\r\nLongitude: 			 %.5lf %1c\r\n", l -> Longitude, l -> EWsymbol);
+	U1SD("%s", gps_dtbuf);	
+	//得到纬度字符串
+	snprintf(gps_dtbuf, 200, "\r\nLatitude: 			 %.5lf %1c\r\n", l -> Latitude, l -> NSsymbol);
+	U1SD("%s", gps_dtbuf);		
+	//得到高度字符串
+	snprintf(gps_dtbuf, 200, "\r\nAltitude: 			 %.2lfm\r\n", l -> Altitude);
+	U1SD("%s", gps_dtbuf);			
+	//得到速度字符串
+	snprintf(gps_dtbuf, 200, "\r\nSpeed: 			 	 %.3lfkm/h\r\n", l -> Speed);
+	U1SD("%s", gps_dtbuf);		
+	//修正模式
+	snprintf(gps_dtbuf, 200, "\r\nFix Mode: 			 %s\r\n", fixModeList[l -> FixMode]);
+	U1SD("%s", gps_dtbuf);			
+	//用于定位的GPS卫星数
+	snprintf(gps_dtbuf, 200, "\r\nGPS+BD Valid Satellite: 	 %02d\r\n", l -> PosslNum);
+	U1SD("%s", gps_dtbuf);		
+	//可见GPS卫星数
+	snprintf(gps_dtbuf, 200, "\r\nGPS Visible Satellite:  	 %02d\r\n", l -> SvNum);
+	U1SD("%s", gps_dtbuf);			
+	//可见北斗卫星数
+	snprintf(gps_dtbuf, 200, "\r\nBD Visible Satellite: 		 %02d\r\n", l -> BeidouSvNum);
+	U1SD("%s", gps_dtbuf);			
+	//显示UTC日期
+	snprintf(gps_dtbuf, 200, "\r\nUTC Date: 			 %04d/%02d/%02d\r\n", l -> GPS_UTC.year, l -> GPS_UTC.month, l -> GPS_UTC.date);
+	U1SD("%s", gps_dtbuf);			
+	//显示UTC时间
+	snprintf(gps_dtbuf, 200, "\r\nUTC Time: 			 %02d:%02d:%02d\r\n", l -> GPS_UTC.hour, l -> GPS_UTC.min, l -> GPS_UTC.sec);
+	U1SD("%s", gps_dtbuf);	
+	//获取信号状态
+	snprintf(gps_dtbuf, 200, "\r\nGPS Real-Time Signal Status: 	 ");
+	U1SD("%s", gps_dtbuf);	
+	snprintf(gps_dtbuf, 200, (l -> CapSignal)? "Capture Success\r\n" : "Capture Fatal\r\n");
+	U1SD("%s", gps_dtbuf);	
+	myfree((void*)gps_dtbuf);
+
+	RTC_ReqOrderHandler();				
 }
 
 //GPS数据获取转储任务处理
