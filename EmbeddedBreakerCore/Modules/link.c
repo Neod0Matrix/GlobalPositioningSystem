@@ -7,30 +7,22 @@
 	该文件写入对框架的函数调用支持
 */
 
-GPS_InfoPrint				GPSP_Switch;
-
 //选项设置，链接到Universal_Resource_Config函数的模块库
 void Modules_UniResConfig (void)
 {
 	//该函数设置内容可以更新Universal_Resource_Config函数原设置
-	GPSP_Switch         = GPSP_Enable;					//GPSP_Enable       GPSP_Disable
 }
 
 //模块选项映射表，链接到urcMapTable_Print函数
 void Modules_URCMap (void)
 {
-	printf("\r\n%02d 	GPS Info Print", urc_gpsp);
-	usart1WaitForDataTransfer();
+
 }
 
 //选项处理，链接到pclURC_DebugHandler函数
 void Modules_urcDebugHandler (u8 ed_status, Modules_SwitchNbr sw_type)
 {
-   //使用前请先更新Modules_SwitchNbr内容
-	switch (sw_type)
-	{
-	case urc_gpsp:		GPSP_Switch     = (GPS_InfoPrint)ed_status;			break;
-	}
+	//使用前请先更新Modules_SwitchNbr内容
 }
 
 //协议调用指令响应，链接到OrderResponse_Handler函数
@@ -127,6 +119,13 @@ void Modules_RTC_TaskScheduler (void)
 		OLED_Switch = OLED_Enable;
 		Light_Switch = Light_Enable;
 	}
+}
+
+//模块状态内容打印请求，链接到sta_req.c displaySystemInfo函数中
+void Modules_StatusReqHandler (void)
+{
+	//此项设计可以减少模块指令的多余添加
+	GPS_TotalData_Display(&lgps);
 }
 
 //====================================================================================================

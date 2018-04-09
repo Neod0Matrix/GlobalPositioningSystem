@@ -502,7 +502,7 @@ static void GPS_TotalData_Storage (nmea_msg *gps, Local_GPSTotalData *l)
 }
 
 //打印GPS定位信息
-static void GPS_TotalData_Display (Local_GPSTotalData *l)
+void GPS_TotalData_Display (Local_GPSTotalData *l)
 {	
 	//定位修正模式字符串
 	const u8 *fixModeList[4] = {(u8*)"Fatal0", 
@@ -571,8 +571,6 @@ void GPS_DataGatherTaskHandler (void)
 		GPS_SkytraProtocolAnalysis(&ggps, (u8 *)u2TempBuffer);	//GPS模块上传数据分析
 		myfree(u2TempBuffer);
 		GPS_TotalData_Storage(&ggps, &lgps);					//GPS数据转储处理
-		if (GPSP_Switch == GPSP_Enable)
-			GPS_TotalData_Display(&lgps);						//实时转换打印
 	}
 }
 

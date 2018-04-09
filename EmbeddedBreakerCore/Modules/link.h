@@ -19,18 +19,14 @@
 #define MDLS					0x1A
 #define Modules_Protocol 		{DH, MDLS, DMAX, DMAX, DMAX, DMAX, DMAX, DMAX, DMAX, DMAX, DMAX, DMAX, DMAX, DMAX, DMAX, DMAX, DMAX, DT}
 
-//是否开启GPS信息打印
-typedef enum {GPSP_Enable = 1, GPSP_Disable = !GPSP_Enable} GPS_InfoPrint;
-extern GPS_InfoPrint			GPSP_Switch;
-
 //urc开源链接编号
 typedef enum
 {
-	urc_gpsp	= 17,
+	empty	= 0,
 } Modules_SwitchNbr;
 
 //裁去config.h中的定义放到这里来重新定义urc协议长度
-#define Module_Add_urcOption_Count	1u
+#define Module_Add_urcOption_Count	0u
 #define Max_Option_Value		(Module_Add_urcOption_Count + FrameDefault_urcOption_Count)			
 //裁去ui.h中定义的总切屏数到这里来重新定义
 #define Module_Add_oledScreen_Count	2u
@@ -48,6 +44,7 @@ void Modules_ExternInterruptInit (void);					//硬件底层外部中断初始化
 void Modules_NonInterruptTask (void);						//模块非中断任务，链接到local_taskmgr.c，默认添加到第二任务
 void Modules_InterruptTask (void);							//模块中断任务，链接到time_base.c TIM2_IRQHandler函数中
 void Modules_RTC_TaskScheduler (void);						//基于RTC时间的任务计划，链接到local_taskmgr.c，默认添加到第四任务
+void Modules_StatusReqHandler (void);						//模块状态内容打印请求，链接到sta_req.c displaySystemInfo函数中
 
 //====================================================================================================
 //code by </MATRIX>@Neod Anderjon
