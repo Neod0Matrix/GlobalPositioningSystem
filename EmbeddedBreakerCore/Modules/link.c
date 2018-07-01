@@ -135,5 +135,11 @@ void Modules_StatusReqHandler (void)
 	GPS_TotalData_Display(&lgps);
 }
 
+//模块插入到exti.c的PB8外部中断函数EXTI9_5_IRQHandler内，触发外部中断打断
+void Modules_EXTI8_IRQHandler (void)
+{
+	//通常来说可以在工控系统内紧急停止电机运转
+}
+
 //====================================================================================================
 //code by </MATRIX>@Neod Anderjon
